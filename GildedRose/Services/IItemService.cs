@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GildedRose.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,7 @@ namespace GildedRose.Services
 {
     public interface IItemService
     {
-
+        IReadOnlyCollection<Item> GetItems();
+        void UpdateQuality();
     }
 }

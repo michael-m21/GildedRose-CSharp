@@ -18,7 +18,7 @@ namespace GildedRose
             for (var i = 0; i < 31; i++)
             {
                 Console.WriteLine("-------- day " + i + " --------");
-                Console.WriteLine("name, sellIn, quality");
+                Console.WriteLine("code, name, sellIn, quality");
                 var items = service.GetItems();
                 foreach (var item in items)
                 {

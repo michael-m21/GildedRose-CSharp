@@ -126,7 +126,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="TestCollections\ApprovalTest.cs" />
-    <Compile Include="TestCollections\GildedRoseTest.cs" />
+    <Compile Include="TestCollections\ItemServiceTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

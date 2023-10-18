@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GildedRose.Specifications;
 
 namespace GildedRose.Services
 {
@@ -26,77 +27,80 @@ namespace GildedRose.Services
         {
             var items = this.itemRepository.GetItems();
 
-            for (var i = 0; i < items.Count; i++)
+            foreach (var item in items)
             {
-                if (items[i].Name != "Aged Brie" && items[i].Name != "Backstage passes to a TAFKAL80ETC concert")
+                this.UpdateItemQuality(item);
+
+                if (new ConstantQualityItemSpecification().IsSatisfiedBy(item))
                 {
-                    if (items[i].Quality > 0)
-                    {
-                        if (items[i].Name != "Sulfuras, Hand of Ragnaros")
-                        {
-                            items[i].Quality = items[i].Quality - 1;
-                        }
-                    }
+                    item.SellIn -= 1;
                 }
-                else
+            }
+
+            itemRepository.Save(items);
+        }
+
+        private void UpdateItemQuality(Item item)
+        {
+            try
+            {
+                if (new ConstantQualityItemSpecification().IsSatisfiedBy(item))
                 {
-                    if (items[i].Quality < 50)
-                    {
-                        items[i].Quality = items[i].Quality + 1;
-
-                        if (items[i].Name == "Backstage passes to a TAFKAL80ETC concert")
-                        {
-                            if (items[i].SellIn < 11)
-                            {
-                                if (items[i].Quality < 50)
-                                {
-                                    items[i].Quality = items[i].Quality + 1;
-                                }
-                            }
-
-                            if (items[i].SellIn < 6)
-                            {
-                                if (items[i].Quality < 50)
-                                {
-                                    items[i].Quality = items[i].Quality + 1;
-                                }
-                            }
-                        }
-                    }
+                    return;
                 }
 
-                if (items[i].Name != "Sulfuras, Hand of Ragnaros")
+                if (new IncreasesInQualityItemSpecification().IsSatisfiedBy(item))
                 {
-                    items[i].SellIn = items[i].SellIn - 1;
+                    item.Quality += 1;
+                    return;
                 }
 
-                if (items[i].SellIn < 0)
+                if (new SellInOverdueItemSpecification().IsSatisfiedBy(item))
                 {
-                    if (items[i].Name != "Aged Brie")
-                    {
-                        if (items[i].Name != "Backstage passes to a TAFKAL80ETC concert")
-                        {
-                            if (items[i].Quality > 0)
-                            {
-                                if (items[i].Name != "Sulfuras, Hand of Ragnaros")
-                                {
-                                    items[i].Quality = items[i].Quality - 1;
-                                }
-                            }
-                        }
-                        else
-                        {
-                            items[i].Quality = items[i].Quality - items[i].Quality;
-                        }
-                    }
-                    else
-                    {
-                        if (items[i].Quality < 50)
-                        {
-                            items[i].Quality = items[i].Quality + 1;
-                        }
-                    }
+                    item.Quality -= item.Quality;
+                    return;
                 }
+
+                if (new NormalItemSpecification().IsSatisfiedBy(item))
+                {
+                    item.Quality -= 1;
+                    return;
+                }
+
+                if (new BackstagePassItemSpecification().IsSatisfiedBy(item))
+                {
+                    this.UpdateBackstagePassQuantity(item);
+                    return;
+                }
+            }
+            catch(QualityBelowZeroException)
+            {
+                item.Quality = 0;
+            }
+            catch(OverQualityException)
+            {
+                item.Quality = item.MaxQuality;
+            }
+        }
+
+        private void UpdateBackstagePassQuantity(Item item)
+        {
+            if (item.SellIn <= 0)
+            {
+                item.Quality = 0;
+                return;
+            }
+
+            if (item.SellIn < 6)
+            {
+                item.Quality += 3;
+                return;
+            }
+
+            if (item.SellIn < 11)
+            {
+                item.Quality += 2;
+                return;
             }
         }
     }

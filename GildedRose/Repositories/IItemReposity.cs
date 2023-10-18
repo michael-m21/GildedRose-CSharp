@@ -10,5 +10,6 @@ namespace GildedRose.Repositories
     public interface IItemReposity
     {
         IList<Item> GetItems();
+        void Save(IList<Item> items);
     }
 }
