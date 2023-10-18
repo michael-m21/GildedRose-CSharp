@@ -1,6 +1,10 @@
 ﻿using GildedRose.Entities;
+using GildedRose.Repositories;
+using GildedRose.Services;
+using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace GildedRose.Tests.TestCollections
 {
@@ -8,12 +12,22 @@ namespace GildedRose.Tests.TestCollections
     public class GildedRoseTest
     {
         [Test]
-        public void foo()
+        public void WhenPassingFakeDataSameNameShouldBePresent()
         {
-            IList<Item> Items = new List<Item> { new Item { Name = "foo", SellIn = 0, Quality = 0 } };
-            GildedRose app = new GildedRose(Items);
-            app.UpdateQuality();
-            Assert.AreEqual("foo", Items[0].Name);
+            // Arrange
+            IList<Item> fakeItems = new List<Item> { new Item { Name = "foo", SellIn = 0, Quality = 0 } };
+
+            var repositoryMock = new Mock<IItemReposity>();
+            repositoryMock.Setup(x => x.GetItems()).Returns(() => fakeItems);
+
+            var service = new ItemService(repositoryMock.Object);
+
+            // Act
+            service.UpdateQuality();
+            var items = service.GetItems();
+
+            // Assert
+            Assert.AreEqual("foo", items.First().Name);
         }
     }
 }
