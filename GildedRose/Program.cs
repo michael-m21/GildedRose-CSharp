@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using GildedRose.Entities;
 
 namespace GildedRose
 {

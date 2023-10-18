@@ -5,7 +5,7 @@ using ApprovalTests;
 using ApprovalTests.Reporters;
 using NUnit.Framework;
 
-namespace GildedRose
+namespace GildedRose.Tests.TestCollections
 {
     [UseReporter(typeof(DiffReporter))]
     [TestFixture]
